@@ -100,6 +100,16 @@ caller passes `--yes`:
 pnpm switch:env production --yes
 ```
 
+## Examples and agent integration
+
+[`examples/basic`](./examples/basic) contains a minimal host project with root
+scripts, a safe configuration, and a non-secret personal-overlay template.
+
+If an AI coding agent will perform the integration, give it
+[`AGENT_INTEGRATION_PROMPT.md`](./AGENT_INTEGRATION_PROMPT.md). The prompt keeps
+the change at the host project root, forbids secret exposure, and requires the
+same status and guard checks documented here.
+
 ## Configuration
 
 The default file name is `local-env.config.json`. The alias
@@ -364,9 +374,10 @@ Then inspect the tarball manifest, install the tarball in an empty project, and
 smoke-test both a pure Node.js ESM import and the installed CLI. Run
 `npm audit --omit=dev` before publishing. Do not publish when any gate fails.
 
-Published files are limited to `dist`, this README, `DESIGN.md`, the license, and
-package metadata. Consumers do not need `tsx` or TypeScript. The package is
-ESM-only, supports Node.js 20.12 or newer, and has no CommonJS `require` entry.
+Published files are limited to `dist`, the basic example, the agent integration
+prompt, this README, `DESIGN.md`, the license, and package metadata. Consumers do
+not need `tsx` or TypeScript. The package is ESM-only, supports Node.js 20.12 or
+newer, and has no CommonJS `require` entry.
 
 During the `0.x` series, incompatible public API changes may ship in a minor
 release and must be called out in release notes. Stable releases should use the

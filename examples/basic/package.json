@@ -1,0 +1,14 @@
+{
+  "name": "local-env-switch-basic-example",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "switch:env": "local-env-switch use",
+    "switch:env:status": "local-env-switch status",
+    "switch:env:guard": "local-env-switch guard",
+    "dev": "local-env-switch guard && node --env-file=.env app.mjs"
+  },
+  "devDependencies": {
+    "local-env-switch": "^0.1.0"
+  }
+}

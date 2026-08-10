@@ -28,6 +28,8 @@
   },
   "files": [
     "dist",
+    "examples",
+    "AGENT_INTEGRATION_PROMPT.md",
     "README.md",
     "DESIGN.md",
     "LICENSE"

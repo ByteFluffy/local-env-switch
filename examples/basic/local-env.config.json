@@ -1,0 +1,16 @@
+{
+  "environments": ["development", "production"],
+  "confirmEnvironments": ["production"],
+  "infisical": {
+    "domain": "https://app.infisical.com"
+  },
+  "requiredKeys": ["DATABASE_URL", "CACHE_URL"],
+  "protectedKeys": ["DATABASE_URL"],
+  "localRedis": {
+    "url": "redis://127.0.0.1:6379",
+    "keys": ["CACHE_URL"]
+  },
+  "localModeOverrides": {
+    "APP_ENV": "{env}"
+  }
+}
