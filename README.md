@@ -379,9 +379,10 @@ prompt, this README, `DESIGN.md`, the license, and package metadata. Consumers d
 not need `tsx` or TypeScript. The package is ESM-only, supports Node.js 20.12 or
 newer, and has no CommonJS `require` entry.
 
-During the `0.x` series, incompatible public API changes may ship in a minor
-release and must be called out in release notes. Stable releases should use the
-default npm tag; prereleases should use an explicit prerelease version and tag.
+Starting with `1.0.0`, incompatible public API changes require a major release,
+backward-compatible features require a minor release, and compatible fixes use a
+patch release. Stable releases use the default npm tag; prereleases use an
+explicit prerelease version and tag.
 
 Source code and issue tracking are hosted on
 [GitHub](https://github.com/ByteFluffy/local-env-switch). Report vulnerabilities

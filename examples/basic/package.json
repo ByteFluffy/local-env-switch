@@ -9,6 +9,6 @@
     "dev": "local-env-switch guard && node --env-file=.env app.mjs"
   },
   "devDependencies": {
-    "local-env-switch": "^0.1.0"
+    "local-env-switch": "^1.0.0"
   }
 }
