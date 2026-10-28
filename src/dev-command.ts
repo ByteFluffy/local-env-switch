@@ -82,7 +82,6 @@ async function loadDev(root: string) {
       requireValid(typeof profile[field] === 'string' && /^[a-z0-9][a-z0-9.-]*$/.test(profile[field]));
     }
     requireValid(typeof profile.production === 'boolean');
-    requireValid(!profile.production || (/^dev-access-.+-prod$/.test(profile.context) && /(?:^|-)prod$/.test(profile.namespace)));
     requireValid(typeof profile.databaseAlias === 'string' && /^[A-Za-z_][A-Za-z0-9_]{0,62}$/.test(profile.databaseAlias));
     for (const port of [profile.dbPort, profile.configPort]) requireValid(Number.isInteger(port) && port >= 1024 && port <= 65535);
     requireValid(profile.dbPort !== profile.configPort);

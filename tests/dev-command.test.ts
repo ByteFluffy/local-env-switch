@@ -166,6 +166,32 @@ test('--check forwards only explicit personal kubeconfig and target, then cleans
   await assert.rejects(readFile(path.join(f.root,'api.json')), {code:'ENOENT'});
 });
 
+test('production profiles can use a shared gateway with an explicit production bootstrap', async (t) => {
+  const f = await fixture(t);
+  Object.assign(f.profile, {context: 'dev-access-region-a', namespace: 'dev-access-test'});
+  await f.persist();
+  const result = await f.launch(['--check']).done;
+  assert.equal(result.code, 0, result.output);
+  const forward = JSON.parse(await untilFile(f.root,'forward.json'));
+  assert.equal(forward.argv[forward.argv.indexOf('--context') + 1], 'dev-access-region-a');
+  assert.equal(forward.argv[forward.argv.indexOf('--namespace') + 1], 'dev-access-test');
+  assert.equal(await untilFile(f.root,'request.txt'), '/bootstrap?profile=fixture-prod');
+  assert.equal(await untilFile(f.root,'forward.stopped'), 'yes');
+});
+
+test('a shared gateway still rejects a missing or mismatched production bootstrap before app startup', async (t) => {
+  for (const production of [undefined, false]) {
+    const f = await fixture(t);
+    Object.assign(f.profile, {context: 'dev-access-region-a', namespace: 'dev-access-test'});
+    Object.assign(f.scenario.payload as object, {production});
+    await f.persist();
+    const result = await f.launch().done;
+    assert.equal(result.code, 1);
+    assert.equal(await untilFile(f.root,'request.txt'), '/bootstrap?profile=fixture-prod');
+    await assert.rejects(readFile(path.join(f.root,'api.json')), {code:'ENOENT'});
+  }
+});
+
 test('app environment drops inherited secrets, maps password-free DB, and isolates ephemeral groups', async (t) => {
   const f = await fixture(t);
   await writeFile(path.join(f.root,'.env.local'),`OLD_DOTENV_SECRET=${canary}\n`);
@@ -220,14 +246,14 @@ test('bootstrap failures and unauthorized profiles never start apps or reveal pa
 });
 
 test('legacy env canary, secret defaults, shared encryption roots and escaping cwd fail before kubectl', async (t) => {
-  for (const failure of ['env','defaults','root','cwd','unknown-profile','production-context']) {
+  for (const failure of ['env','defaults','root','cwd','unknown-profile','production-type']) {
     const f = await fixture(t);
     if (failure === 'env') await writeFile(path.join(f.root,'.env'),`VIBEPAPER_DEV_PROFILE=fixture-prod\nJWT_SECRET=${canary}\n`);
     if (failure === 'defaults') Object.assign(f.config.dev.defaults, {JWT_SECRET:canary});
     if (failure === 'root') f.config.dev.ephemeralSecretGroups.push(['CHANNEL_SECRET_ENCRYPTION_KEY']);
     if (failure === 'cwd') Object.assign(f.config.dev.commands[0], {cwd:'..'});
     if (failure === 'unknown-profile') await writeFile(path.join(f.root,'.env'),'VIBEPAPER_DEV_PROFILE=unauthorized\n');
-    if (failure === 'production-context') f.profile.context = 'dev-access-region-a';
+    if (failure === 'production-type') Object.assign(f.profile, {production: 'true'});
     await f.persist();
     const result = await f.launch().done;
     assert.equal(result.code, 1, failure);
