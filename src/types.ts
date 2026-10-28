@@ -50,6 +50,7 @@ export type LocalEnvConfig = {
 
 /** JSON config file shape (relative paths ok). */
 export type LocalEnvConfigFile = {
+  dev?: import('./dev-command.js').DevConfigFile;
   environments: string[];
   confirmEnvironments?: string[];
   warnEnvironments?: string[];

@@ -37,3 +37,8 @@ export type {
   GuardInput,
   EnvironmentBuild,
 } from './types.js';
+
+export { runDev } from './dev-command.js';
+export { parseDevProfile, validateDevBootstrap } from './dev-profile.js';
+export type { DevConfigFile, DevProfileConfig, RunDevInput } from './dev-command.js';
+export type { DevBootstrapExpected, ValidatedDevBootstrap } from './dev-profile.js';

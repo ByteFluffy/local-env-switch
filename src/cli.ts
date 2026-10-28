@@ -5,12 +5,14 @@ import {
   resolveConfig,
   useEnvironment as switchEnvironment,
 } from './api.js';
+import { runDev } from './dev-command.js';
 
 function usage(): string {
   return `Usage:
   local-env-switch use <environment> [--shared-redis] [--yes]
   local-env-switch status
   local-env-switch guard [--runner]
+  local-env-switch dev [--check] [--service name] [--kubeconfig path]
 
 Examples:
   local-env-switch use development
@@ -28,6 +30,26 @@ async function main(): Promise<void> {
   try {
     if (!cmd || cmd === '-h' || cmd === '--help') {
       process.stdout.write(usage());
+      return;
+    }
+
+    if (cmd === 'dev') {
+      let check = false;
+      let service: string | undefined;
+      let kubeconfig: string | undefined;
+      for (let index = 1; index < argv.length; index++) {
+        const option = argv[index];
+        if (option === '--check' && !check) check = true;
+        else if (option === '--service' && service === undefined && argv[index + 1] && !argv[index + 1].startsWith('-')) service = argv[++index];
+        else if (option === '--kubeconfig' && kubeconfig === undefined && argv[index + 1] && !argv[index + 1].startsWith('-')) kubeconfig = argv[++index];
+        else throw new Error('INVALID_DEV_CONFIG');
+      }
+      const controller = new AbortController();
+      const stop = () => controller.abort();
+      process.once('SIGINT', stop);
+      process.once('SIGTERM', stop);
+      try { await runDev({ check, service, kubeconfig, signal: controller.signal }); }
+      finally { process.removeListener('SIGINT', stop); process.removeListener('SIGTERM', stop); }
       return;
     }
 
